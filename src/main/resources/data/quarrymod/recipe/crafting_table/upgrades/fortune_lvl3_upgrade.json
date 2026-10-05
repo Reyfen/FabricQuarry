@@ -6,18 +6,10 @@
     " U "
   ],
   "key": {
-    "C": {
-      "item": "techreborn:industrial_circuit"
-    },
-    "P": {
-      "item": "techreborn:peridot_storage_block"
-    },
-    "U": {
-      "item": "quarrymod:fortune_lvl2_upgrade"
-    },
-    "I": {
-      "item": "techreborn:iridium_alloy_plate"
-    }
+    "C": "techreborn:industrial_circuit",
+    "P": "techreborn:peridot_storage_block",
+    "U": "quarrymod:fortune_lvl2_upgrade",
+    "I": "techreborn:iridium_alloy_plate"
   },
   "result": {
     "id": "quarrymod:fortune_lvl3_upgrade"

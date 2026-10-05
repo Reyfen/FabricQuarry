@@ -38,7 +38,7 @@ public class QuarryManagerServerPacket {
             Identifier.of(QuarryMod.MOD_ID, "quarry_mine_all"));
         public static final PacketCodec<RegistryByteBuf, QuarryMineAllPayload> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC, QuarryMineAllPayload::pos,
-            PacketCodecs.BOOL, QuarryMineAllPayload::mineAll,
+            PacketCodecs.BOOLEAN, QuarryMineAllPayload::mineAll,
             QuarryMineAllPayload::new);
 
         @Override

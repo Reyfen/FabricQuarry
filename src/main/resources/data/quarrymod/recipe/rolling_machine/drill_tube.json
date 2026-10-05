@@ -7,12 +7,8 @@
     " S "
   ],
   "key": {
-    "A": {
-      "item": "techreborn:advanced_alloy_plate"
-    },
-    "S": {
-      "tag": "c:plates/steel"
-    }
+    "A": "techreborn:advanced_alloy_plate",
+    "S": "#c:plates/steel"
   },
   "result": {
     "id": "quarrymod:drill_tube",

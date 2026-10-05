@@ -12,7 +12,7 @@ public class QuarryUpgradeItem extends Item implements IQuarryUpgrade {
     public final IQuarryUpgrade behavior;
 
     public QuarryUpgradeItem(String name, IQuarryUpgrade quarryBehaviour) {
-        super(RegistryManager.getItemGroupSettings().maxCount(16));
+        super(new Item.Settings().maxCount(16).registryKey(RegistryManager.itemKey(name)));
         this.name = name;
         this.behavior = quarryBehaviour;
     }

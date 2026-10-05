@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.slot.Slot;
@@ -445,8 +446,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     @SuppressWarnings("ConstantConditions")
     private List<ItemStack> getDroppedStacks(BlockState blockState, BlockPos blockPos) {
         ItemStack item = Items.NETHERITE_PICKAXE.getDefaultStack();
-        RegistryWrapper.Impl<Enchantment> enchantments = world.getRegistryManager()
-            .getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+        Registry<Enchantment> enchantments = world.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT);
         item.addEnchantment(enchantments.getOrThrow(Enchantments.FORTUNE), fortuneLevel);
         item.addEnchantment(enchantments.getOrThrow(Enchantments.SILK_TOUCH), isSilkTouch ? 1 : 0);
         return Block.getDroppedStacks(blockState, (ServerWorld) world, blockPos, world.getBlockEntity(blockPos),

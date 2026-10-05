@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "quarrymod:item/fortune_lvl1_upgrade"
+  }
+}

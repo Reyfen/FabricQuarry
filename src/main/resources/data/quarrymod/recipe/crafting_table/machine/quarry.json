@@ -6,24 +6,12 @@
     "SDS"
   ],
   "key": {
-    "C": {
-      "item": "techreborn:advanced_circuit"
-    },
-    "M": {
-      "item": "techreborn:advanced_machine_frame"
-    },
-    "E": {
-      "item": "techreborn:extractor"
-    },
-    "I": {
-      "tag": "c:ingots/iridium"
-    },
-    "S": {
-      "tag": "c:plates/steel"
-    },
-    "D": {
-      "item": "techreborn:advanced_drill"
-    }
+    "C": "techreborn:advanced_circuit",
+    "M": "techreborn:advanced_machine_frame",
+    "E": "techreborn:extractor",
+    "I": "#c:ingots/iridium",
+    "S": "#c:plates/steel",
+    "D": "techreborn:advanced_drill"
   },
   "result": {
     "id": "quarrymod:quarry"

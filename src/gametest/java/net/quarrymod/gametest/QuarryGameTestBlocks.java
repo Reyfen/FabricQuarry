@@ -8,6 +8,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
@@ -16,11 +18,11 @@ public class QuarryGameTestBlocks implements ModInitializer {
 
     public static final String MOD_ID = "quarrymod-gametest";
 
-    public static final Block TAGGED_ROCK = new Block(AbstractBlock.Settings.create());
-    public static final Block DENIED_ORE = new Block(AbstractBlock.Settings.create());
-    public static final Block ORE_SHINY = new Block(AbstractBlock.Settings.create());
-    public static final Block ORE_MACHINE = new MachineBlock(AbstractBlock.Settings.create());
-    public static final Block PLAIN_ROCK = new Block(AbstractBlock.Settings.create());
+    public static final Block TAGGED_ROCK = new Block(settings("tagged_rock"));
+    public static final Block DENIED_ORE = new Block(settings("denied_ore"));
+    public static final Block ORE_SHINY = new Block(settings("ore_shiny"));
+    public static final Block ORE_MACHINE = new MachineBlock(settings("ore_machine"));
+    public static final Block PLAIN_ROCK = new Block(settings("plain_rock"));
 
     @Override
     public void onInitialize() {
@@ -31,8 +33,16 @@ public class QuarryGameTestBlocks implements ModInitializer {
         register("plain_rock", PLAIN_ROCK);
     }
 
+    private static RegistryKey<Block> key(String name) {
+        return RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, name));
+    }
+
+    private static AbstractBlock.Settings settings(String name) {
+        return AbstractBlock.Settings.create().registryKey(key(name));
+    }
+
     private static void register(String name, Block block) {
-        Registry.register(Registries.BLOCK, Identifier.of(MOD_ID, name), block);
+        Registry.register(Registries.BLOCK, key(name), block);
     }
 
     private static class MachineBlock extends Block implements BlockEntityProvider {

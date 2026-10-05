@@ -6,18 +6,10 @@
     "SIS"
   ],
   "key": {
-    "C": {
-      "item": "techreborn:advanced_circuit"
-    },
-    "S": {
-      "tag": "c:plates/silicon"
-    },
-    "M": {
-      "item": "techreborn:compressor"
-    },
-    "I": {
-      "tag": "c:ingots/iridium"
-    }
+    "C": "techreborn:advanced_circuit",
+    "S": "#c:plates/silicon",
+    "M": "techreborn:compressor",
+    "I": "#c:ingots/iridium"
   },
   "result": {
     "id": "quarrymod:silktouch_upgrade"

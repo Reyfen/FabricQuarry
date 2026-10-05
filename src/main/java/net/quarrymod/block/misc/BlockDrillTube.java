@@ -1,8 +1,8 @@
 package net.quarrymod.block.misc;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.sound.BlockSoundGroup;
+import net.quarrymod.RegistryManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -12,10 +12,11 @@ public class BlockDrillTube extends Block {
 
     public BlockDrillTube() {
         super(
-            FabricBlockSettings.create()
+            AbstractBlock.Settings.create()
                     .mapColor(MapColor.BLACK)
                     .strength(2.0F, 3.0F)
-                    .sounds(BlockSoundGroup.METAL));
+                    .sounds(BlockSoundGroup.METAL)
+                    .registryKey(RegistryManager.blockKey("drill_tube")));
     }
 
     @Override

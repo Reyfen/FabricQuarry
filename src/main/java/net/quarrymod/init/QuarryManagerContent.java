@@ -9,7 +9,6 @@ import net.quarrymod.block.QuarryBlock;
 import net.quarrymod.block.misc.BlockDrillTube;
 import net.quarrymod.items.IQuarryUpgrade;
 import net.quarrymod.items.QuarryUpgradeItem;
-import techreborn.utils.InitUtils;
 
 
 public class QuarryManagerContent {
@@ -25,7 +24,6 @@ public class QuarryManagerContent {
         <B extends Block> Machine(B block) {
             this.name = this.toString().toLowerCase(Locale.ROOT);
             this.block = block;
-            InitUtils.setup(block, name);
         }
 
         public ItemStack getStack() {
@@ -67,7 +65,6 @@ public class QuarryManagerContent {
         Upgrades(IQuarryUpgrade upgrade) {
             name = this.toString().toLowerCase(Locale.ROOT) + "_upgrade";
             item = new QuarryUpgradeItem(name, upgrade);
-            InitUtils.setup(item, name);
         }
 
         @Override

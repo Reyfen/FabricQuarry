@@ -6,15 +6,9 @@
     "PPC"
   ],
   "key": {
-    "C": {
-      "item": "techreborn:electronic_circuit"
-    },
-    "A": {
-      "item": "techreborn:advanced_alloy_plate"
-    },
-    "P": {
-      "item": "quarrymod:drill_tube"
-    }
+    "C": "techreborn:electronic_circuit",
+    "A": "techreborn:advanced_alloy_plate",
+    "P": "quarrymod:drill_tube"
   },
   "result": {
     "id": "quarrymod:range_extender_lvl1_upgrade"

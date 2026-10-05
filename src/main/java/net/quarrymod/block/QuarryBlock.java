@@ -1,26 +1,46 @@
 package net.quarrymod.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.quarrymod.RegistryManager;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.client.GuiType;
+import reborncore.api.blockentity.IMachineGuiHandler;
+import reborncore.common.blocks.BlockMachineBase;
 import reborncore.common.util.ItemHandlerUtils;
-import techreborn.blocks.GenericMachineBlock;
 
-public class QuarryBlock extends GenericMachineBlock {
+public class QuarryBlock extends BlockMachineBase {
 
     public static final EnumProperty<DisplayState> STATE = EnumProperty.of("state", DisplayState.class);
 
     public QuarryBlock() {
-        super(GuiType.QUARRY, QuarryBlockEntity::new);
+        super(AbstractBlock.Settings.create()
+            .sounds(BlockSoundGroup.METAL)
+            .mapColor(MapColor.IRON_GRAY)
+            .strength(2f, 2f)
+            .registryKey(RegistryManager.blockKey("quarry")));
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new QuarryBlockEntity(pos, state);
+    }
+
+    @Override
+    public IMachineGuiHandler getGui() {
+        return GuiType.QUARRY;
     }
 
     public void setState(DisplayState state, World world, BlockPos pos) {

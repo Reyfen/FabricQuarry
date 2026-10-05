@@ -6,18 +6,10 @@
     " P "
   ],
   "key": {
-    "C": {
-      "item": "techreborn:electronic_circuit"
-    },
-    "E": {
-      "item": "techreborn:extractor"
-    },
-    "L": {
-      "tag": "c:plates/lazurite"
-    },
-    "P": {
-      "item": "techreborn:peridot_plate"
-    }
+    "C": "techreborn:electronic_circuit",
+    "E": "techreborn:extractor",
+    "L": "#c:plates/lazurite",
+    "P": "techreborn:peridot_plate"
   },
   "result": {
     "id": "quarrymod:fortune_lvl1_upgrade"

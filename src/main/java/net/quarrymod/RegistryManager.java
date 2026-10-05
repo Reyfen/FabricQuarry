@@ -1,7 +1,11 @@
 package net.quarrymod;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.Item.Settings;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.quarrymod.block.QuarryItemGroup;
 import net.quarrymod.client.QuarryScreenRegistry;
@@ -18,26 +22,32 @@ import static reborncore.RebornRegistry.registerItem;
 
 public class RegistryManager {
 
-    private static Settings itemGroupSettings;
-
     private RegistryManager() {
     }
 
-    public static Settings getItemGroupSettings() {
-        return itemGroupSettings;
+    public static RegistryKey<Block> blockKey(String name) {
+        return RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(QuarryMod.MOD_ID, name));
+    }
+
+    public static RegistryKey<Item> itemKey(String name) {
+        return RegistryKey.of(RegistryKeys.ITEM, Identifier.of(QuarryMod.MOD_ID, name));
+    }
+
+    private static BlockItem blockItem(Block block) {
+        return new BlockItem(block, new Item.Settings()
+            .registryKey(RegistryKey.of(RegistryKeys.ITEM, Registries.BLOCK.getId(block)))
+            .useBlockPrefixedTranslationKey());
     }
 
     public static void Init() {
-        itemGroupSettings = new Item.Settings();
-
         registerBlock(QuarryManagerContent.DRILL_TUBE,
-            itemGroupSettings,
+            RegistryManager::blockItem,
             Identifier.of(QuarryMod.MOD_ID, "drill_tube"));
 
         Arrays.stream(Machine.values()).forEach(
             value ->
                 registerBlock(value.block,
-                    itemGroupSettings,
+                    RegistryManager::blockItem,
                     Identifier.of(QuarryMod.MOD_ID, value.name)));
 
         Arrays.stream(Upgrades.values()).forEach(

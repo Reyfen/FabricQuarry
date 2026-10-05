@@ -6,18 +6,10 @@
     " U "
   ],
   "key": {
-    "C": {
-      "item": "techreborn:advanced_circuit"
-    },
-    "L": {
-      "tag": "c:plates/lapis"
-    },
-    "P": {
-      "item": "techreborn:peridot_storage_block"
-    },
-    "U": {
-      "item": "quarrymod:fortune_lvl1_upgrade"
-    }
+    "C": "techreborn:advanced_circuit",
+    "L": "#c:plates/lapis",
+    "P": "techreborn:peridot_storage_block",
+    "U": "quarrymod:fortune_lvl1_upgrade"
   },
   "result": {
     "id": "quarrymod:fortune_lvl2_upgrade"

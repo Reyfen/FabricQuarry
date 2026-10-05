@@ -1,9 +1,9 @@
 package net.quarrymod.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -61,8 +61,7 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
         drawSlot(drawContext, 139, 20, layer);
 
         // upgrades
-        RenderSystem.setShaderTexture(0, defaultTextureSheet);
-        drawContext.drawTexture(defaultTextureSheet, x - 48, y + 24, 0, 0, 27, 46);
+        drawContext.drawTexture(RenderLayer::getGuiTextured, defaultTextureSheet, x - 48, y + 24, 0, 0, 27, 46, 256, 256);
 
         drawOutputSlotBar(drawContext, 54, 65, 5, layer);
     }
@@ -76,11 +75,10 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
         mineOresButton.visible = !blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes >= 3;
 
         if (displayState != DisplayState.Off && displayState != DisplayState.Mining) {
-            RenderSystem.setShaderTexture(0, defaultTextureSheet);
-            if (displayState == DisplayState.Error) {
-                drawContext.drawTexture(defaultTextureSheet, 86, 42, 28, 0, 15, 16);
+                if (displayState == DisplayState.Error) {
+                drawContext.drawTexture(RenderLayer::getGuiTextured, defaultTextureSheet, 86, 42, 28, 0, 15, 16, 256, 256);
             } else {
-                drawContext.drawTexture(defaultTextureSheet, 86, 42, 44, 0, 15, 15);
+                drawContext.drawTexture(RenderLayer::getGuiTextured, defaultTextureSheet, 86, 42, 44, 0, 15, 15, 256, 256);
             }
         }
 

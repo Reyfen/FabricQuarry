@@ -6,18 +6,10 @@
     "RS "
   ],
   "key": {
-    "C": {
-      "item": "techreborn:advanced_circuit"
-    },
-    "T": {
-      "tag": "c:plates/titanium"
-    },
-    "S": {
-      "tag": "c:plates/steel"
-    },
-    "R": {
-      "item": "quarrymod:range_extender_lvl1_upgrade"
-    }
+    "C": "techreborn:advanced_circuit",
+    "T": "#c:plates/titanium",
+    "S": "#c:plates/steel",
+    "R": "quarrymod:range_extender_lvl1_upgrade"
   },
   "result": {
     "id": "quarrymod:range_extender_lvl2_upgrade"
