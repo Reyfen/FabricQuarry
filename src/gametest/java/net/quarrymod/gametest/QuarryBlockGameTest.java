@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -58,6 +59,15 @@ public class QuarryBlockGameTest {
                 context.succeed();
             });
         });
+    }
+
+    @GameTest
+    public void quarryScreenHandlerBuilds(GameTestHelper context) {
+        QuarryBlockEntity quarry = placeQuarry(context);
+        Player player = context.makeMockServerPlayerInLevel();
+        context.assertTrue(quarry.createScreenHandler(0, player) != null,
+            Component.literal("Quarry screen handler was not created"));
+        context.succeed();
     }
 
     private static QuarryBlockEntity placeQuarry(GameTestHelper context) {

@@ -56,7 +56,7 @@ public class OreMatcher {
         Identifier id = BuiltInRegistries.BLOCK.getKey(block);
 
         if (denyFilter == null) {
-            denyFilter = BlockFilter.parse(QuarryMachineConfig.quarryBlocksToNeverMine);
+            denyFilter = BlockFilter.parse(QuarryMachineConfig.quarryBlocksToNeverMine.get());
         }
         if (state.is(NEVER_MINE) || denyFilter.matches(state, id)) {
             return false;
@@ -67,7 +67,7 @@ public class OreMatcher {
         }
 
         if (allowFilter == null) {
-            allowFilter = BlockFilter.parse(QuarryMachineConfig.quarryAdditioanlBlocksToMine);
+            allowFilter = BlockFilter.parse(QuarryMachineConfig.quarryAdditioanlBlocksToMine.get());
         }
         if (allowFilter.matches(state, id)) {
             return true;

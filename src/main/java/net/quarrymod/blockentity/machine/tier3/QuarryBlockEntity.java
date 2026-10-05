@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -39,6 +38,7 @@ import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
+import reborncore.common.screen.builder.SyncedObjectTypes;
 import reborncore.common.screen.slot.BaseSlot;
 import reborncore.common.util.ItemHandlerUtils;
 import reborncore.common.util.RebornInventory;
@@ -112,7 +112,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     public boolean getMineAll() {
-        return switch (quarryAccessibleExcavationModes) {
+        return switch (quarryAccessibleExcavationModes.get()) {
             // ores only
             case QUARRY_MINE_ORE_CONFIG -> false;
             // all only
@@ -122,7 +122,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     public void setMineAll(boolean mineAll) {
-        isMineAll = switch (quarryAccessibleExcavationModes) {
+        isMineAll = switch (quarryAccessibleExcavationModes.get()) {
             // ores only
             case QUARRY_MINE_ORE_CONFIG -> false;
             // all only
@@ -306,7 +306,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private void updateRemainingBlocks() {
         final int calculatedY = calculateCurrentDrillTubeDepth();
         final int radius = (int) Math.round(
-            QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get(rangeExtenderLevel));
+            QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get().get(rangeExtenderLevel));
         if (currentRadius != radius || currentY != calculatedY || remainingBlocks.isEmpty()) {
             currentRadius = radius;
             currentY = calculatedY;
@@ -425,12 +425,12 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     private int getTicksPerExcavation() {
-        return Math.max((int) (QuarryMachineConfig.quarryTiksPerExcavation * (1d - getSpeedMultiplier())),
-            QuarryMachineConfig.quarryMinTiksPerExcavation);
+        return Math.max((int) (QuarryMachineConfig.quarryTiksPerExcavation.get() * (1d - getSpeedMultiplier())),
+            QuarryMachineConfig.quarryMinTiksPerExcavation.get());
     }
 
     private long getEnergyPerExcavation() {
-        return (long) (QuarryMachineConfig.quarryEnergyPerExcavation * getPowerMultiplier());
+        return (long) (QuarryMachineConfig.quarryEnergyPerExcavation.get() * getPowerMultiplier());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -456,7 +456,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
     @Override
     public long getBaseMaxPower() {
-        return QuarryMachineConfig.quarryMaxEnergy;
+        return QuarryMachineConfig.quarryMaxEnergy.get();
     }
 
     @Override
@@ -471,8 +471,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
     @Override
     public long getBaseMaxInput() {
-        return (long) (QuarryMachineConfig.quarryMaxInput * (1d
-            + getSpeedMultiplier() * QuarryMachineConfig.quarryMaxInputOverclockerMultipier));
+        return (long) (QuarryMachineConfig.quarryMaxInput.get() * (1d
+            + getSpeedMultiplier() * QuarryMachineConfig.quarryMaxInputOverclockerMultipier.get()));
     }
 
     @Override
@@ -503,10 +503,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             .outputSlot(10, 135, 66)
             .energySlot(11, 8, 72)
             .syncEnergyValue()
-            .sync(ByteBufCodecs.VAR_LONG, this::getProgress, this::setProgress)
-            .sync(ByteBufCodecs.INT, this::getState, this::setState)
-            .sync(ByteBufCodecs.INT, this::getWorkType, this::setWorkType)
-            .sync(ByteBufCodecs.INT, this::getMiningAll, this::setMiningAll)
+            .sync(SyncedObjectTypes.VAR_LONG, this::getProgress, this::setProgress)
+            .sync(SyncedObjectTypes.INT, this::getState, this::setState)
+            .sync(SyncedObjectTypes.INT, this::getWorkType, this::setWorkType)
+            .sync(SyncedObjectTypes.INT, this::getMiningAll, this::setMiningAll)
             .addInventory();
 
         try {

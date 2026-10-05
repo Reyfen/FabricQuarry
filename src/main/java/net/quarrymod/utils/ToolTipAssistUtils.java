@@ -38,7 +38,7 @@ public class ToolTipAssistUtils {
             .withStyle(ChatFormatting.GOLD));
         tips.add(Component.translatable("tooltip.quarrymod.range_extender_value")
             .withStyle(ChatFormatting.GREEN)
-            .append(Component.nullToEmpty(String.valueOf(QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get(level).intValue())
+            .append(Component.nullToEmpty(String.valueOf(QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get().get(level).intValue())
                 .formatted(ChatFormatting.GOLD)))
             .append(Component.translatable("tooltip.quarrymod.range_extender_blocks")
                 .withStyle(ChatFormatting.GOLD)));

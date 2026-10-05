@@ -79,7 +79,7 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
                 }
             }
         }
-        inventory.setHashChanged();
+        inventory.setHasChanged();
     }
 
     @SuppressWarnings("ConstantConditions")

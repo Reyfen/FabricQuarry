@@ -71,8 +71,8 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
         final Layer layer = Layer.FOREGROUND;
         final DisplayState displayState = blockEntity.getDisplayState();
 
-        mineAllButton.visible = blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes >= 3;
-        mineOresButton.visible = !blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes >= 3;
+        mineAllButton.visible = blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes.get() >= 3;
+        mineOresButton.visible = !blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes.get() >= 3;
 
         if (displayState != DisplayState.Off && displayState != DisplayState.Mining) {
                 if (displayState == DisplayState.Error) {
