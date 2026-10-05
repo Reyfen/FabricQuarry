@@ -10,16 +10,16 @@
       "item": "techreborn:industrial_circuit"
     },
     "T": {
-      "tag": "c:titanium_plates"
+      "tag": "c:plates/titanium"
     },
     "S": {
-      "tag": "c:tungstensteel_plates"
+      "tag": "c:plates/tungstensteel"
     },
     "R": {
       "item": "quarrymod:range_extender_lvl2_upgrade"
     }
   },
   "result": {
-    "item": "quarrymod:range_extender_lvl3_upgrade"
+    "id": "quarrymod:range_extender_lvl3_upgrade"
   }
 }

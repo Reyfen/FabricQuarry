@@ -10,16 +10,16 @@
       "item": "techreborn:advanced_circuit"
     },
     "S": {
-      "tag": "c:silicon_plates"
+      "tag": "c:plates/silicon"
     },
     "M": {
       "item": "techreborn:compressor"
     },
     "I": {
-      "tag": "c:iridium_ingots"
+      "tag": "c:ingots/iridium"
     }
   },
   "result": {
-    "item": "quarrymod:silktouch_upgrade"
+    "id": "quarrymod:silktouch_upgrade"
   }
 }

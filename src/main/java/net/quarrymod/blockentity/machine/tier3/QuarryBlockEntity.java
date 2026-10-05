@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -11,6 +12,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -211,7 +215,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
         if (excavationState == ExcavationState.Complete) {
             return;
         }
-        if (!isActive(RedstoneConfiguration.POWER_IO)) {
+        if (!isActive(RedstoneConfiguration.Element.POWER_IO)) {
             setExcavationState(ExcavationState.NoEnergyIncome);
             return;
         }
@@ -441,8 +445,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     @SuppressWarnings("ConstantConditions")
     private List<ItemStack> getDroppedStacks(BlockState blockState, BlockPos blockPos) {
         ItemStack item = Items.NETHERITE_PICKAXE.getDefaultStack();
-        item.addEnchantment(Enchantments.FORTUNE, fortuneLevel);
-        item.addEnchantment(Enchantments.SILK_TOUCH, isSilkTouch ? 1 : 0);
+        RegistryWrapper.Impl<Enchantment> enchantments = world.getRegistryManager()
+            .getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+        item.addEnchantment(enchantments.getOrThrow(Enchantments.FORTUNE), fortuneLevel);
+        item.addEnchantment(enchantments.getOrThrow(Enchantments.SILK_TOUCH), isSilkTouch ? 1 : 0);
         return Block.getDroppedStacks(blockState, (ServerWorld) world, blockPos, world.getBlockEntity(blockPos),
             null, item);
     }
@@ -496,10 +502,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             .outputSlot(10, 135, 66)
             .energySlot(11, 8, 72)
             .syncEnergyValue()
-            .sync(this::getProgress, this::setProgress)
-            .sync(this::getState, this::setState)
-            .sync(this::getWorkType, this::setWorkType)
-            .sync(this::getMiningAll, this::setMiningAll)
+            .sync(PacketCodecs.VAR_LONG, this::getProgress, this::setProgress)
+            .sync(PacketCodecs.INTEGER, this::getState, this::setState)
+            .sync(PacketCodecs.INTEGER, this::getWorkType, this::setWorkType)
+            .sync(PacketCodecs.INTEGER, this::getMiningAll, this::setMiningAll)
             .addInventory();
 
         try {
@@ -524,26 +530,26 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
+    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(tag, registryLookup);
         NbtCompound data = tag.getCompound("Quarry");
         setState(data.getInt("state"));
         setWorkType(data.getInt("workType"));
         setProgress(data.getLong("progress"));
         setMiningAll(data.getInt("mineAll"));
-        quarryUpgradesInventory.read(tag, "quarryUpgradesInventory");
+        quarryUpgradesInventory.read(tag, "quarryUpgradesInventory", registryLookup);
     }
 
     @Override
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(tag, registryLookup);
         NbtCompound data = new NbtCompound();
         data.putInt("state", getState());
         data.putInt("workType", getWorkType());
         data.putLong("progress", getProgress());
         data.putInt("mineAll", getMiningAll());
         tag.put("Quarry", data);
-        quarryUpgradesInventory.write(tag, "quarryUpgradesInventory");
+        tag.put("quarryUpgradesInventory", quarryUpgradesInventory.serializeNBT(registryLookup));
     }
 
     private long getProgress() {

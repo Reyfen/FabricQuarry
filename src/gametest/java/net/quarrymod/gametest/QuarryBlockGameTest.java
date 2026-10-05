@@ -29,8 +29,8 @@ public class QuarryBlockGameTest implements FabricGameTest {
     public void quarryFollowsRedstoneControl(TestContext context) {
         QuarryBlockEntity quarry = placeQuarry(context);
         quarry.setStored(ENERGY);
-        quarry.getRedstoneConfiguration()
-            .setState(RedstoneConfiguration.POWER_IO, RedstoneConfiguration.State.ENABLED_ON);
+        quarry.setRedstoneConfiguration(quarry.getRedstoneConfiguration()
+            .withState(RedstoneConfiguration.Element.POWER_IO, RedstoneConfiguration.State.ENABLED_ON));
 
         context.waitAndRun(40, () -> {
             context.assertTrue(quarry.getExcavationState() == ExcavationState.NoEnergyIncome,

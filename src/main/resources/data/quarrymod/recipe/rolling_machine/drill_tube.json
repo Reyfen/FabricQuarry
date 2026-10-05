@@ -1,0 +1,23 @@
+{
+  "type": "techreborn:rolling_machine",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    " A ",
+    " S "
+  ],
+  "key": {
+    "A": {
+      "item": "techreborn:advanced_alloy_plate"
+    },
+    "S": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "result": {
+    "id": "quarrymod:drill_tube",
+    "count": 6
+  },
+  "power": 5,
+  "time": 250
+}

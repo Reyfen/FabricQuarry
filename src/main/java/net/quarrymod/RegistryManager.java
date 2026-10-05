@@ -32,16 +32,16 @@ public class RegistryManager {
 
         registerBlock(QuarryManagerContent.DRILL_TUBE,
             itemGroupSettings,
-            new Identifier(QuarryMod.MOD_ID, "drill_tube"));
+            Identifier.of(QuarryMod.MOD_ID, "drill_tube"));
 
         Arrays.stream(Machine.values()).forEach(
             value ->
                 registerBlock(value.block,
                     itemGroupSettings,
-                    new Identifier(QuarryMod.MOD_ID, value.name)));
+                    Identifier.of(QuarryMod.MOD_ID, value.name)));
 
         Arrays.stream(Upgrades.values()).forEach(
-            value -> registerItem(value.item, new Identifier(QuarryMod.MOD_ID, value.name)));
+            value -> registerItem(value.item, Identifier.of(QuarryMod.MOD_ID, value.name)));
         QuarryModBlockEntities.init();
         QuarryItemGroup.registerItemsInItemGroup();
     }

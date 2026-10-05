@@ -16,16 +16,16 @@
       "item": "techreborn:extractor"
     },
     "I": {
-      "tag": "c:iridium_ingots"
+      "tag": "c:ingots/iridium"
     },
     "S": {
-      "tag": "c:steel_plates"
+      "tag": "c:plates/steel"
     },
     "D": {
       "item": "techreborn:advanced_drill"
     }
   },
   "result": {
-    "item": "quarrymod:quarry"
+    "id": "quarrymod:quarry"
   }
 }

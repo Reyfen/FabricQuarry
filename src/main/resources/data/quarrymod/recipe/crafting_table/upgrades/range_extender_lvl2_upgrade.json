@@ -10,16 +10,16 @@
       "item": "techreborn:advanced_circuit"
     },
     "T": {
-      "tag": "c:titanium_plates"
+      "tag": "c:plates/titanium"
     },
     "S": {
-      "tag": "c:steel_plates"
+      "tag": "c:plates/steel"
     },
     "R": {
       "item": "quarrymod:range_extender_lvl1_upgrade"
     }
   },
   "result": {
-    "item": "quarrymod:range_extender_lvl2_upgrade"
+    "id": "quarrymod:range_extender_lvl2_upgrade"
   }
 }

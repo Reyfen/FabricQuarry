@@ -13,13 +13,13 @@
       "item": "techreborn:extractor"
     },
     "L": {
-      "tag": "c:lazurite_plates"
+      "tag": "c:plates/lazurite"
     },
     "P": {
       "item": "techreborn:peridot_plate"
     }
   },
   "result": {
-    "item": "quarrymod:fortune_lvl1_upgrade"
+    "id": "quarrymod:fortune_lvl1_upgrade"
   }
 }

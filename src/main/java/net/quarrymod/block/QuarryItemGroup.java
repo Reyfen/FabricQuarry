@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class QuarryItemGroup {
     public static void registerItemsInItemGroup() {
-        ItemGroupEvents.modifyEntriesEvent(RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier("techreborn", "item_group"))).register(entries -> {
+        ItemGroupEvents.modifyEntriesEvent(RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.of("techreborn", "item_group"))).register(entries -> {
             entries.add(QuarryManagerContent.DRILL_TUBE);
             Arrays.stream(QuarryManagerContent.Machine.values()).forEach(value -> entries.add(value.block));
             Arrays.stream(QuarryManagerContent.Upgrades.values()).forEach(value -> entries.add(value.item));

@@ -32,7 +32,7 @@ public class QuarryGameTestBlocks implements ModInitializer {
     }
 
     private static void register(String name, Block block) {
-        Registry.register(Registries.BLOCK, new Identifier(MOD_ID, name), block);
+        Registry.register(Registries.BLOCK, Identifier.of(MOD_ID, name), block);
     }
 
     private static class MachineBlock extends Block implements BlockEntityProvider {

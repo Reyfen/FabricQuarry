@@ -18,9 +18,9 @@ import net.quarrymod.config.QuarryMachineConfig;
 
 public class OreMatcher {
 
-    public static final TagKey<Block> ORES = TagKey.of(RegistryKeys.BLOCK, new Identifier(QuarryMod.MOD_ID, "ores"));
+    public static final TagKey<Block> ORES = TagKey.of(RegistryKeys.BLOCK, Identifier.of(QuarryMod.MOD_ID, "ores"));
     public static final TagKey<Block> NEVER_MINE = TagKey.of(RegistryKeys.BLOCK,
-        new Identifier(QuarryMod.MOD_ID, "never_mine"));
+        Identifier.of(QuarryMod.MOD_ID, "never_mine"));
 
     private static final Pattern ORE_NAME = Pattern.compile("(^|_)ores?($|_)");
 

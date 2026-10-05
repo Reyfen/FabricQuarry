@@ -12,7 +12,7 @@ import net.quarrymod.block.QuarryBlock.DisplayState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.config.QuarryMachineConfig;
 import net.quarrymod.packets.QuarryManagerServerPacket;
-import reborncore.client.ClientNetworkManager;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import reborncore.client.gui.GuiBase;
 import reborncore.client.gui.GuiBuilder;
 import reborncore.client.gui.widget.GuiButtonExtended;
@@ -20,7 +20,7 @@ import reborncore.common.screen.BuiltScreenHandler;
 
 public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
 
-    public static final Identifier defaultTextureSheet = new Identifier(QuarryMod.MOD_ID,
+    public static final Identifier defaultTextureSheet = Identifier.of(QuarryMod.MOD_ID,
         "textures/gui/guielements.png");
 
     private final QuarryBlockEntity blockEntity;
@@ -97,7 +97,7 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
     }
 
     public void changeMineAll(boolean mineAll) {
-        ClientNetworkManager.sendToServer(QuarryManagerServerPacket.createPacketQuarryMineAll(blockEntity, mineAll));
+        ClientPlayNetworking.send(QuarryManagerServerPacket.createPacketQuarryMineAll(blockEntity, mineAll));
     }
 
     @Override

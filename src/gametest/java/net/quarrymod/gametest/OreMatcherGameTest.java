@@ -37,7 +37,7 @@ public class OreMatcherGameTest implements FabricGameTest {
     @GameTest(templateName = EMPTY_STRUCTURE)
     public void techRebornOres(TestContext context) {
         for (String name : new String[]{"tin_ore", "deepslate_iridium_ore", "pyrite_ore", "sheldonite_ore"}) {
-            Identifier id = new Identifier("techreborn", name);
+            Identifier id = Identifier.of("techreborn", name);
             context.assertTrue(Registries.BLOCK.containsId(id), "Missing block " + id);
             expectOre(context, Registries.BLOCK.get(id), true);
         }

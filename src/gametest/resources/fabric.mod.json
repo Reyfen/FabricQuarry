@@ -10,7 +10,8 @@
     ],
     "fabric-gametest": [
       "net.quarrymod.gametest.OreMatcherGameTest",
-      "net.quarrymod.gametest.QuarryBlockGameTest"
+      "net.quarrymod.gametest.QuarryBlockGameTest",
+      "net.quarrymod.gametest.QuarryDataGameTest"
     ]
   },
   "depends": {

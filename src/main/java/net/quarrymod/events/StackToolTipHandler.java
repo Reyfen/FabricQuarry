@@ -4,7 +4,8 @@ import com.google.common.collect.Maps;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -27,7 +28,7 @@ public class StackToolTipHandler implements ItemTooltipCallback {
     }
 
     @Override
-    public void getTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltipLines) {
+    public void getTooltip(ItemStack stack, TooltipContext tooltipContext, TooltipType tooltipType, List<Text> tooltipLines) {
         Item item = stack.getItem();
 
         if (!MinecraftClient.getInstance().isOnThread()) {

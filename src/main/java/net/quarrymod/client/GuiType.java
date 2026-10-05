@@ -2,15 +2,17 @@ package net.quarrymod.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry.Factory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.ExtendedClientHandlerFactory;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,7 +39,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     private static <T extends BlockEntity> GuiType<T> register(String id,
         Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
-        return register(new Identifier(QuarryMod.MOD_ID, id), factorySupplierMeme);
+        return register(Identifier.of(QuarryMod.MOD_ID, id), factorySupplierMeme);
     }
 
     private static <T extends BlockEntity> GuiType<T> register(Identifier identifier,
@@ -57,13 +59,13 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
     private GuiType(Identifier identifier, Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
         this.identifier = identifier;
         this.guiFactory = factorySupplierMeme;
-        this.screenHandlerType = ScreenHandlerRegistry.registerExtended(identifier, getScreenHandlerFactory());
-
+        this.screenHandlerType = Registry.register(Registries.SCREEN_HANDLER, identifier,
+            new ExtendedScreenHandlerType<>(getScreenHandlerFactory(), ScreenHandlerData.PACKET_CODEC));
     }
 
-    private ExtendedClientHandlerFactory<BuiltScreenHandler> getScreenHandlerFactory() {
-        return (syncId, playerInventory, packetByteBuf) -> {
-            final BlockEntity blockEntity = playerInventory.player.getWorld().getBlockEntity(packetByteBuf.readBlockPos());
+    private ExtendedScreenHandlerType.ExtendedFactory<BuiltScreenHandler, ScreenHandlerData> getScreenHandlerFactory() {
+        return (syncId, playerInventory, data) -> {
+            final BlockEntity blockEntity = playerInventory.player.getWorld().getBlockEntity(data.pos());
             BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(syncId,
                 playerInventory.player);
 
@@ -82,10 +84,10 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
     public void open(PlayerEntity player, BlockPos pos, World world) {
         if (!world.isClient) {
             //This is awful
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<ScreenHandlerData>() {
                 @Override
-                public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
-                    packetByteBuf.writeBlockPos(pos);
+                public ScreenHandlerData getScreenOpeningData(ServerPlayerEntity serverPlayerEntity) {
+                    return new ScreenHandlerData(pos);
                 }
 
                 @Override
@@ -114,15 +116,22 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
         return screenHandlerType;
     }
 
+    record ScreenHandlerData(BlockPos pos) {
+
+        static final PacketCodec<RegistryByteBuf, ScreenHandlerData> PACKET_CODEC = PacketCodec.tuple(
+            BlockPos.PACKET_CODEC, ScreenHandlerData::pos,
+            ScreenHandlerData::new);
+    }
+
     @Environment(EnvType.CLIENT)
     public interface GuiFactory<T extends BlockEntity> extends
-        Factory<BuiltScreenHandler, HandledScreen<BuiltScreenHandler>> {
+        HandledScreens.Provider<BuiltScreenHandler, HandledScreen<BuiltScreenHandler>> {
 
-        HandledScreen<?> create(int syncId, PlayerEntity playerEntity, T blockEntity);
+        HandledScreen<BuiltScreenHandler> create(int syncId, PlayerEntity playerEntity, T blockEntity);
 
         @Override
-        default HandledScreen create(BuiltScreenHandler builtScreenHandler, PlayerInventory playerInventory,
-            Text text) {
+        default HandledScreen<BuiltScreenHandler> create(BuiltScreenHandler builtScreenHandler,
+            PlayerInventory playerInventory, Text text) {
             PlayerEntity playerEntity = playerInventory.player;
             //noinspection unchecked
             T blockEntity = (T) builtScreenHandler.getBlockEntity();
