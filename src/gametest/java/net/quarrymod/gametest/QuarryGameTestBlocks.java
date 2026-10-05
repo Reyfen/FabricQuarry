@@ -1,17 +1,17 @@
 package net.quarrymod.gametest;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class QuarryGameTestBlocks implements ModInitializer {
@@ -33,27 +33,27 @@ public class QuarryGameTestBlocks implements ModInitializer {
         register("plain_rock", PLAIN_ROCK);
     }
 
-    private static RegistryKey<Block> key(String name) {
-        return RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, name));
+    private static ResourceKey<Block> key(String name) {
+        return ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
     }
 
-    private static AbstractBlock.Settings settings(String name) {
-        return AbstractBlock.Settings.create().registryKey(key(name));
+    private static BlockBehaviour.Properties settings(String name) {
+        return BlockBehaviour.Properties.of().setId(key(name));
     }
 
     private static void register(String name, Block block) {
-        Registry.register(Registries.BLOCK, key(name), block);
+        Registry.register(BuiltInRegistries.BLOCK, key(name), block);
     }
 
-    private static class MachineBlock extends Block implements BlockEntityProvider {
+    private static class MachineBlock extends Block implements EntityBlock {
 
-        MachineBlock(Settings settings) {
+        MachineBlock(Properties settings) {
             super(settings);
         }
 
         @Nullable
         @Override
-        public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return null;
         }
     }

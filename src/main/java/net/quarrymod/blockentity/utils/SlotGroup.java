@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.util.ItemUtils;
 import reborncore.common.util.RebornInventory;
@@ -21,11 +21,11 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
     }
 
     private boolean hasSpace(int slot, ItemStack stack) {
-        ItemStack slotStack = inventory.getStack(slot);
+        ItemStack slotStack = inventory.getItem(slot);
 
         return slotStack.isEmpty()
             || ItemUtils.isItemEqual(slotStack, stack, true, true)
-            && slotStack.getCount() + stack.getCount() <= stack.getMaxCount();
+            && slotStack.getCount() + stack.getCount() <= stack.getMaxStackSize();
     }
 
     public boolean hasSpace(ItemStack stack) {
@@ -55,12 +55,12 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 
 
     private void addStack(int slot, ItemStack stack) {
-        ItemStack slotStack = inventory.getStack(slot);
+        ItemStack slotStack = inventory.getItem(slot);
 
         if (slotStack.isEmpty()) {
-            inventory.setStack(slot, stack);
+            inventory.setItem(slot, stack);
         } else if (ItemUtils.isItemEqual(slotStack, stack, true, true)) {
-            slotStack.setCount((Math.min(stack.getMaxCount(), stack.getCount() + slotStack.getCount())));
+            slotStack.setCount((Math.min(stack.getMaxStackSize(), stack.getCount() + slotStack.getCount())));
         }
     }
 
@@ -94,14 +94,14 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 
     public void executeForAll(Consumer<ItemStack> func) {
         for (int slotId : slotList) {
-            func.accept(inventory.getStack(slotId));
+            func.accept(inventory.getItem(slotId));
         }
     }
 
     // TODO: make it possible to grab from multiple slots
     public ItemStack consumeAny(int count, Predicate<ItemStack> filter) {
         for (int slotId : slotList) {
-            ItemStack slotStack = inventory.getStack(slotId);
+            ItemStack slotStack = inventory.getItem(slotId);
             if (!slotStack.isEmpty()
                 && slotStack.getCount() >= count
                 && filter.test(slotStack)) {
@@ -118,7 +118,7 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
     // TODO: make it possible to grab from multiple slots
     private ItemStack getConsumeSlot(ItemStack stack) {
         for (int slotId : slotList) {
-            ItemStack slotStack = inventory.getStack(slotId);
+            ItemStack slotStack = inventory.getItem(slotId);
             if (!slotStack.isEmpty()
                 && ItemUtils.isItemEqual(slotStack, stack, true, true)
                 && slotStack.getCount() >= stack.getCount()) {

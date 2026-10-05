@@ -1,7 +1,7 @@
 package net.quarrymod.items;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.quarrymod.RegistryManager;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +12,7 @@ public class QuarryUpgradeItem extends Item implements IQuarryUpgrade {
     public final IQuarryUpgrade behavior;
 
     public QuarryUpgradeItem(String name, IQuarryUpgrade quarryBehaviour) {
-        super(new Item.Settings().maxCount(16).registryKey(RegistryManager.itemKey(name)));
+        super(new Item.Properties().stacksTo(16).setId(RegistryManager.itemKey(name)));
         this.name = name;
         this.behavior = quarryBehaviour;
     }

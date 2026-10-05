@@ -2,7 +2,7 @@ package net.quarrymod.blockentity.machine.tier3;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class MiningUtil {
 
@@ -49,20 +49,20 @@ public class MiningUtil {
         while (k < m && l < n) {
             // Add the first row from the remaining rows
             for (i = l; i < n; ++i) {
-                minePositions.addFirst(miningPosition.add(k, 0, i));
+                minePositions.addFirst(miningPosition.offset(k, 0, i));
             }
             k++;
 
             // Add the last column from the remaining columns
             for (i = k; i < m; ++i) {
-                minePositions.addFirst(miningPosition.add(i, 0, n - 1));
+                minePositions.addFirst(miningPosition.offset(i, 0, n - 1));
             }
             n--;
 
             // Add last remaining from the row */
             if (k < m) {
                 for (i = n - 1; i >= l; --i) {
-                    minePositions.addFirst(miningPosition.add((m - 1), 0, i));
+                    minePositions.addFirst(miningPosition.offset((m - 1), 0, i));
                 }
                 m--;
             }
@@ -70,7 +70,7 @@ public class MiningUtil {
             // Add the first column from the remaining columns */
             if (l < n) {
                 for (i = m - 1; i >= k; --i) {
-                    minePositions.addFirst(miningPosition.add(i, 0, l));
+                    minePositions.addFirst(miningPosition.offset(i, 0, l));
                 }
                 l++;
             }

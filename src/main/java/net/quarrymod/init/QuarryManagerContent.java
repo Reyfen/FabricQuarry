@@ -1,10 +1,10 @@
 package net.quarrymod.init;
 
 import java.util.Locale;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 import net.quarrymod.block.QuarryBlock;
 import net.quarrymod.block.misc.BlockDrillTube;
 import net.quarrymod.items.IQuarryUpgrade;
@@ -15,7 +15,7 @@ public class QuarryManagerContent {
 
     public static final Block DRILL_TUBE = new BlockDrillTube();
 
-    public enum Machine implements ItemConvertible {
+    public enum Machine implements ItemLike {
         QUARRY(new QuarryBlock());
 
         public final String name;
@@ -36,7 +36,7 @@ public class QuarryManagerContent {
         }
     }
 
-    public enum Upgrades implements ItemConvertible {
+    public enum Upgrades implements ItemLike {
         RANGE_EXTENDER_LVL1((quarryBlockEntity, stack) -> {
             quarryBlockEntity.setRangeExtenderLevel(1);
         }),

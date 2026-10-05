@@ -6,21 +6,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.config.QuarryMachineConfig;
 
 public class OreMatcher {
 
-    public static final TagKey<Block> ORES = TagKey.of(RegistryKeys.BLOCK, Identifier.of(QuarryMod.MOD_ID, "ores"));
-    public static final TagKey<Block> NEVER_MINE = TagKey.of(RegistryKeys.BLOCK,
-        Identifier.of(QuarryMod.MOD_ID, "never_mine"));
+    public static final TagKey<Block> ORES = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(QuarryMod.MOD_ID, "ores"));
+    public static final TagKey<Block> NEVER_MINE = TagKey.create(Registries.BLOCK,
+        Identifier.fromNamespaceAndPath(QuarryMod.MOD_ID, "never_mine"));
 
     private static final Pattern ORE_NAME = Pattern.compile("(^|_)ores?($|_)");
 
@@ -53,16 +53,16 @@ public class OreMatcher {
 
     private static boolean computeIsOre(BlockState state) {
         Block block = state.getBlock();
-        Identifier id = Registries.BLOCK.getId(block);
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
 
         if (denyFilter == null) {
             denyFilter = BlockFilter.parse(QuarryMachineConfig.quarryBlocksToNeverMine);
         }
-        if (state.isIn(NEVER_MINE) || denyFilter.matches(state, id)) {
+        if (state.is(NEVER_MINE) || denyFilter.matches(state, id)) {
             return false;
         }
 
-        if (state.isIn(ORES)) {
+        if (state.is(ORES)) {
             return true;
         }
 
@@ -73,7 +73,7 @@ public class OreMatcher {
             return true;
         }
 
-        return !(block instanceof BlockEntityProvider) && ORE_NAME.matcher(id.getPath()).find();
+        return !(block instanceof EntityBlock) && ORE_NAME.matcher(id.getPath()).find();
     }
 
     private record BlockFilter(Set<Identifier> ids, List<TagKey<Block>> tags) {
@@ -90,7 +90,7 @@ public class OreMatcher {
                         continue;
                     }
                     if (isTag) {
-                        tags.add(TagKey.of(RegistryKeys.BLOCK, id));
+                        tags.add(TagKey.create(Registries.BLOCK, id));
                     } else {
                         ids.add(id);
                     }
@@ -104,7 +104,7 @@ public class OreMatcher {
                 return true;
             }
             for (TagKey<Block> tag : tags) {
-                if (state.isIn(tag)) {
+                if (state.is(tag)) {
                     return true;
                 }
             }

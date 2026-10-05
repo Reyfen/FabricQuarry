@@ -1,12 +1,12 @@
 package net.quarrymod.gametest;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.test.TestContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.quarrymod.blockentity.machine.tier3.ExcavationState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.init.QuarryManagerContent;
@@ -18,50 +18,50 @@ public class QuarryBlockGameTest {
     private static final long ENERGY = 100_000;
 
     @GameTest(maxTicks = 100)
-    public void quarryPlacesAndTicks(TestContext context) {
+    public void quarryPlacesAndTicks(GameTestHelper context) {
         placeQuarry(context);
-        context.waitAndRun(40, () -> {
+        context.runAfterDelay(40, () -> {
             context.getBlockEntity(QUARRY_POS, QuarryBlockEntity.class);
-            context.complete();
+            context.succeed();
         });
     }
 
     @GameTest(maxTicks = 100)
-    public void quarryDropsUpgradesWhenBroken(TestContext context) {
+    public void quarryDropsUpgradesWhenBroken(GameTestHelper context) {
         QuarryBlockEntity quarry = placeQuarry(context);
         Item upgrade = QuarryManagerContent.Upgrades.SILKTOUCH.item;
-        quarry.quarryUpgradesInventory.setStack(0, new ItemStack(upgrade));
+        quarry.quarryUpgradesInventory.setItem(0, new ItemStack(upgrade));
 
-        context.setBlockState(QUARRY_POS, Blocks.AIR);
-        context.waitAndRun(5, () -> {
-            context.expectItemAt(upgrade, QUARRY_POS, 2.0);
-            context.complete();
+        context.setBlock(QUARRY_POS, Blocks.AIR);
+        context.runAfterDelay(5, () -> {
+            context.assertItemEntityPresent(upgrade, QUARRY_POS, 2.0);
+            context.succeed();
         });
     }
 
     @GameTest(maxTicks = 200)
-    public void quarryFollowsRedstoneControl(TestContext context) {
+    public void quarryFollowsRedstoneControl(GameTestHelper context) {
         QuarryBlockEntity quarry = placeQuarry(context);
         quarry.setStored(ENERGY);
         quarry.setRedstoneConfiguration(quarry.getRedstoneConfiguration()
             .withState(RedstoneConfiguration.Element.POWER_IO, RedstoneConfiguration.State.ENABLED_ON));
 
-        context.waitAndRun(40, () -> {
+        context.runAfterDelay(40, () -> {
             context.assertTrue(quarry.getExcavationState() == ExcavationState.NoEnergyIncome,
-                Text.literal("Quarry should be stopped without redstone, state " + quarry.getExcavationState()));
+                Component.literal("Quarry should be stopped without redstone, state " + quarry.getExcavationState()));
             context.assertTrue(quarry.getStored() == ENERGY,
-                Text.literal("Quarry used energy without redstone: " + quarry.getStored()));
+                Component.literal("Quarry used energy without redstone: " + quarry.getStored()));
 
-            context.setBlockState(QUARRY_POS.east(), Blocks.REDSTONE_BLOCK);
-            context.waitAndRun(40, () -> {
-                context.assertTrue(quarry.getStored() < ENERGY, Text.literal("Quarry did not work with redstone signal"));
-                context.complete();
+            context.setBlock(QUARRY_POS.east(), Blocks.REDSTONE_BLOCK);
+            context.runAfterDelay(40, () -> {
+                context.assertTrue(quarry.getStored() < ENERGY, Component.literal("Quarry did not work with redstone signal"));
+                context.succeed();
             });
         });
     }
 
-    private static QuarryBlockEntity placeQuarry(TestContext context) {
-        context.setBlockState(QUARRY_POS, QuarryManagerContent.Machine.QUARRY.block.getDefaultState());
+    private static QuarryBlockEntity placeQuarry(GameTestHelper context) {
+        context.setBlock(QUARRY_POS, QuarryManagerContent.Machine.QUARRY.block.defaultBlockState());
         return context.getBlockEntity(QUARRY_POS, QuarryBlockEntity.class);
     }
 }

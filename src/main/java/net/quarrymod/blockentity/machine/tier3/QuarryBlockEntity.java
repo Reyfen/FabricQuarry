@@ -1,26 +1,26 @@
 package net.quarrymod.blockentity.machine.tier3;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.quarrymod.block.QuarryBlock;
 import net.quarrymod.block.QuarryBlock.DisplayState;
 import net.quarrymod.block.misc.BlockDrillTube;
@@ -150,8 +150,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     private void refreshProperty() {
-        if (world != null && !world.isClient()) {
-            ((QuarryBlock) world.getBlockState(pos).getBlock()).setState(getDisplayState(), world, pos);
+        if (level != null && !level.isClientSide()) {
+            ((QuarryBlock) level.getBlockState(worldPosition).getBlock()).setState(getDisplayState(), level, worldPosition);
         }
     }
 
@@ -181,16 +181,16 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
         setExcavationWorkType(ExcavationWorkType.Mining);
         setProgress(0);
         this.currentRadius = 0;
-        this.currentY = pos.getY();
+        this.currentY = worldPosition.getY();
         this.currentTickTime = 0;
         this.remainingBlocks = new LinkedList<>();
     }
 
     @Override
-    public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity2) {
+    public void tick(Level world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity2) {
         super.tick(world, pos, state, blockEntity2);
 
-        if (world == null || world.isClient()) {
+        if (world == null || world.isClientSide()) {
             return;
         }
 
@@ -289,7 +289,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
         while (!remainingBlocks.isEmpty()) {
             BlockPos blockPos = remainingBlocks.poll();
 
-            if (!isChunkLoaded(world, blockPos)) {
+            if (!isChunkLoaded(level, blockPos)) {
                 continue;
             }
 
@@ -317,11 +317,11 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private Queue<BlockPos> createMiningArea() {
         Queue<BlockPos> blocks = new LinkedList<>();
         // No area to check when the height is the same as the one of the miner.
-        if (currentY == pos.getY()) {
+        if (currentY == worldPosition.getY()) {
             return blocks;
         }
 
-        return MiningUtil.createMiningPosition(currentRadius, new BlockPos(pos.getX(), currentY, pos.getZ()));
+        return MiningUtil.createMiningPosition(currentRadius, new BlockPos(worldPosition.getX(), currentY, worldPosition.getZ()));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -332,11 +332,11 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             return;
         }
 
-        List<ItemStack> drop = getDroppedStacks(world.getBlockState(blockPos), blockPos);
+        List<ItemStack> drop = getDroppedStacks(level.getBlockState(blockPos), blockPos);
 
         if (outputSlotGroup.hasSpace(drop)) {
             outputSlotGroup.addStacks(drop);
-            world.removeBlock(blockPos, false);
+            level.removeBlock(blockPos, false);
             if (fillHole) {
                 tryFillHole(blockPos);
             }
@@ -351,7 +351,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private void tryFillHole(BlockPos blockPos) {
         ItemStack blockToPlace = holeFillerSlotGroup.consumeAny(1, QuarryBlockEntity::holeFillerFilter);
         if (!blockToPlace.isEmpty() && blockToPlace.getItem() instanceof BlockItem blockItem) {
-            world.setBlockState(blockPos, blockItem.getBlock().getDefaultState());
+            level.setBlockAndUpdate(blockPos, blockItem.getBlock().defaultBlockState());
         }
     }
 
@@ -359,17 +359,17 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private void drillDown() {
         int newDepth = currentY - 1;
 
-        if (newDepth <= world.getBottomY()) {
+        if (newDepth <= level.getMinY()) {
             setExcavationWorkType(ExtractTube);
             setExcavationState(InProgress);
             return;
         }
 
-        BlockPos blockPos = new BlockPos(pos.getX(), newDepth, pos.getZ());
-        BlockState blockState = world.getBlockState(blockPos);
+        BlockPos blockPos = new BlockPos(worldPosition.getX(), newDepth, worldPosition.getZ());
+        BlockState blockState = level.getBlockState(blockPos);
         ItemStack drillTubeItem = new ItemStack(QuarryManagerContent.DRILL_TUBE.asItem());
 
-        if (blockState.getHardness(world, blockPos) < 0f) {
+        if (blockState.getDestroySpeed(level, blockPos) < 0f) {
             setExcavationWorkType(ExtractTube);
             setExcavationState(InProgress);
             return;
@@ -397,13 +397,13 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
         drillTubeSlotGroup.consume(drillTubeItem);
         setExcavationState(InProgress);
-        world.setBlockState(blockPos, QuarryManagerContent.DRILL_TUBE.getDefaultState());
+        level.setBlockAndUpdate(blockPos, QuarryManagerContent.DRILL_TUBE.defaultBlockState());
     }
 
     @SuppressWarnings("ConstantConditions")
     private void drillUp() {
         int tubeDepth = calculateCurrentDrillTubeDepth();
-        if (tubeDepth == pos.getY()) {
+        if (tubeDepth == worldPosition.getY()) {
             setExcavationState(ExcavationState.Complete);
             return;
         }
@@ -411,8 +411,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
         ItemStack tubeItem = new ItemStack((QuarryManagerContent.DRILL_TUBE).asItem());
 
         if (drillTubeSlotGroup.hasSpace(tubeItem)) {
-            BlockPos blockPos = new BlockPos(pos.getX(), tubeDepth, pos.getZ());
-            world.removeBlock(blockPos, false);
+            BlockPos blockPos = new BlockPos(worldPosition.getX(), tubeDepth, worldPosition.getZ());
+            level.removeBlock(blockPos, false);
 
             if (!getMineAll()) {
                 tryFillHole(blockPos);
@@ -435,22 +435,22 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
     @SuppressWarnings("ConstantConditions")
     private boolean canMineBlock(BlockPos blockPos) {
-        BlockState state = world.getBlockState(blockPos);
+        BlockState state = level.getBlockState(blockPos);
         Block block = state.getBlock();
         return !state.isAir()
-            && !(block instanceof FluidBlock)
-            && state.getHardness(world, blockPos) >= 0f
+            && !(block instanceof LiquidBlock)
+            && state.getDestroySpeed(level, blockPos) >= 0f
             && !isDrillTube(state)
             && (getMineAll() || OreMatcher.isOre(state));
     }
 
     @SuppressWarnings("ConstantConditions")
     private List<ItemStack> getDroppedStacks(BlockState blockState, BlockPos blockPos) {
-        ItemStack item = Items.NETHERITE_PICKAXE.getDefaultStack();
-        Registry<Enchantment> enchantments = world.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT);
-        item.addEnchantment(enchantments.getOrThrow(Enchantments.FORTUNE), fortuneLevel);
-        item.addEnchantment(enchantments.getOrThrow(Enchantments.SILK_TOUCH), isSilkTouch ? 1 : 0);
-        return Block.getDroppedStacks(blockState, (ServerWorld) world, blockPos, world.getBlockEntity(blockPos),
+        ItemStack item = Items.NETHERITE_PICKAXE.getDefaultInstance();
+        Registry<Enchantment> enchantments = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        item.enchant(enchantments.getOrThrow(Enchantments.FORTUNE), fortuneLevel);
+        item.enchant(enchantments.getOrThrow(Enchantments.SILK_TOUCH), isSilkTouch ? 1 : 0);
+        return Block.getDrops(blockState, (ServerLevel) level, blockPos, level.getBlockEntity(blockPos),
             null, item);
     }
 
@@ -476,7 +476,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @Override
-    public ItemStack getToolDrop(PlayerEntity entityPlayer) {
+    public ItemStack getToolDrop(Player entityPlayer) {
         return QuarryManagerContent.Machine.QUARRY.getStack();
     }
 
@@ -486,7 +486,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @Override
-    public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
+    public BuiltScreenHandler createScreenHandler(int syncID, Player player) {
         ScreenHandlerBuilder screenHandler = new ScreenHandlerBuilder("quarry").player(player.getInventory())
             .inventory().hotbar().addInventory()
             .blockEntity(this)
@@ -503,10 +503,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             .outputSlot(10, 135, 66)
             .energySlot(11, 8, 72)
             .syncEnergyValue()
-            .sync(PacketCodecs.VAR_LONG, this::getProgress, this::setProgress)
-            .sync(PacketCodecs.INTEGER, this::getState, this::setState)
-            .sync(PacketCodecs.INTEGER, this::getWorkType, this::setWorkType)
-            .sync(PacketCodecs.INTEGER, this::getMiningAll, this::setMiningAll)
+            .sync(ByteBufCodecs.VAR_LONG, this::getProgress, this::setProgress)
+            .sync(ByteBufCodecs.INT, this::getState, this::setState)
+            .sync(ByteBufCodecs.INT, this::getWorkType, this::setWorkType)
+            .sync(ByteBufCodecs.INT, this::getMiningAll, this::setMiningAll)
             .addInventory();
 
         try {
@@ -531,28 +531,28 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @Override
-    public void onBlockReplaced(BlockPos pos, BlockState oldState) {
-        if (world != null) {
-            ItemHandlerUtils.dropItemHandler(world, pos, quarryUpgradesInventory);
+    public void preRemoveSideEffects(BlockPos pos, BlockState oldState) {
+        if (level != null) {
+            ItemHandlerUtils.dropItemHandler(level, pos, quarryUpgradesInventory);
         }
-        super.onBlockReplaced(pos, oldState);
+        super.preRemoveSideEffects(pos, oldState);
     }
 
     @Override
-    public void readData(ReadView view) {
-        super.readData(view);
-        ReadView data = view.getReadView("Quarry");
-        setState(data.getInt("state", 0));
-        setWorkType(data.getInt("workType", 0));
-        setProgress(data.getLong("progress", 0L));
-        setMiningAll(data.getInt("mineAll", 0));
+    public void loadAdditional(ValueInput view) {
+        super.loadAdditional(view);
+        ValueInput data = view.childOrEmpty("Quarry");
+        setState(data.getIntOr("state", 0));
+        setWorkType(data.getIntOr("workType", 0));
+        setProgress(data.getLongOr("progress", 0L));
+        setMiningAll(data.getIntOr("mineAll", 0));
         quarryUpgradesInventory.read(view, "quarryUpgradesInventory");
     }
 
     @Override
-    public void writeData(WriteView view) {
-        super.writeData(view);
-        WriteView data = view.get("Quarry");
+    public void saveAdditional(ValueOutput view) {
+        super.saveAdditional(view);
+        ValueOutput data = view.child("Quarry");
         data.putInt("state", getState());
         data.putInt("workType", getWorkType());
         data.putLong("progress", getProgress());
@@ -595,7 +595,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private static boolean holeFillerFilter(ItemStack stack) {
         Item item = stack.getItem();
         if (item instanceof BlockItem blockItem) {
-            return blockItem.getBlock().getDefaultState().getBlock().equals(Blocks.STONE);
+            return blockItem.getBlock().defaultBlockState().getBlock().equals(Blocks.STONE);
         }
         return false;
     }
@@ -616,15 +616,15 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private int calculateCurrentDrillTubeDepth() {
         boolean hasTubes = false;
 
-        for (int y = pos.getY() - 1; y >= world.getBottomY(); y--) {
-            if (isDrillTube(world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ())))) {
+        for (int y = worldPosition.getY() - 1; y >= level.getMinY(); y--) {
+            if (isDrillTube(level.getBlockState(new BlockPos(worldPosition.getX(), y, worldPosition.getZ())))) {
                 hasTubes = true;
             } else {
                 return y + 1;
             }
         }
 
-        return hasTubes ? world.getBottomY() : pos.getY();
+        return hasTubes ? level.getMinY() : worldPosition.getY();
     }
 
     private boolean isDrillTube(BlockState blockState) {

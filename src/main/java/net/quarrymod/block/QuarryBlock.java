@@ -1,19 +1,19 @@
 package net.quarrymod.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.MapColor;
 import net.quarrymod.RegistryManager;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.client.GuiType;
@@ -22,18 +22,18 @@ import reborncore.common.blocks.BlockMachineBase;
 
 public class QuarryBlock extends BlockMachineBase {
 
-    public static final EnumProperty<DisplayState> STATE = EnumProperty.of("state", DisplayState.class);
+    public static final EnumProperty<DisplayState> STATE = EnumProperty.create("state", DisplayState.class);
 
     public QuarryBlock() {
-        super(AbstractBlock.Settings.create()
-            .sounds(BlockSoundGroup.METAL)
-            .mapColor(MapColor.IRON_GRAY)
+        super(BlockBehaviour.Properties.of()
+            .sound(SoundType.METAL)
+            .mapColor(MapColor.METAL)
             .strength(2f, 2f)
-            .registryKey(RegistryManager.blockKey("quarry")));
+            .setId(RegistryManager.blockKey("quarry")));
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new QuarryBlockEntity(pos, state);
     }
 
@@ -42,24 +42,24 @@ public class QuarryBlock extends BlockMachineBase {
         return GuiType.QUARRY;
     }
 
-    public void setState(DisplayState state, World world, BlockPos pos) {
-        world.setBlockState(pos, world.getBlockState(pos).with(STATE, state));
+    public void setState(DisplayState state, Level world, BlockPos pos) {
+        world.setBlockAndUpdate(pos, world.getBlockState(pos).setValue(STATE, state));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, ACTIVE, STATE);
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        super.onPlaced(world, pos, state, placer, stack);
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, placer, stack);
         if (world.getBlockEntity(pos) instanceof QuarryBlockEntity quarryEntity) {
             quarryEntity.resetOnPlaced();
         }
     }
 
-    public enum DisplayState implements StringIdentifiable {
+    public enum DisplayState implements StringRepresentable {
         Off("off"),
         Mining("mining"),
         ExtractTube("extract_tube"),
@@ -73,15 +73,15 @@ public class QuarryBlock extends BlockMachineBase {
         }
 
         @Override
-        public String asString() {
+        public String getSerializedName() {
             return name;
         }
 
-        public Formatting getFormatting() {
+        public ChatFormatting getFormatting() {
             return switch (this) {
-                case ExtractTube -> Formatting.GREEN;
-                case Complete -> Formatting.AQUA;
-                default -> Formatting.RED;
+                case ExtractTube -> ChatFormatting.GREEN;
+                case Complete -> ChatFormatting.AQUA;
+                default -> ChatFormatting.RED;
             };
         }
     }

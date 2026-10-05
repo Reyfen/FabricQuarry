@@ -2,7 +2,7 @@ package net.quarrymod.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.gui.screens.MenuScreens;
 
 @Environment(EnvType.CLIENT)
 public class QuarryScreenRegistry {
@@ -12,6 +12,6 @@ public class QuarryScreenRegistry {
     }
 
     public static void init() {
-        HandledScreens.register(GuiType.QUARRY.getType(), GuiType.QUARRY.getGuiFactory());
+        MenuScreens.register(GuiType.QUARRY.getType(), GuiType.QUARRY.getGuiFactory());
     }
 }

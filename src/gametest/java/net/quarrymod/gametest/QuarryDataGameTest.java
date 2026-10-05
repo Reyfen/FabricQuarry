@@ -1,11 +1,11 @@
 package net.quarrymod.gametest;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
-import net.minecraft.block.Block;
-import net.minecraft.loot.LootTable;
-import net.minecraft.registry.Registries;
-import net.minecraft.test.TestContext;
-import net.minecraft.text.Text;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.init.QuarryManagerContent;
 
@@ -14,30 +14,30 @@ public class QuarryDataGameTest {
     private static final int RECIPE_COUNT = 9;
 
     @GameTest
-    public void recipesLoad(TestContext context) {
-        long loaded = context.getWorld().getServer().getRecipeManager().values().stream()
-            .filter(entry -> entry.id().getValue().getNamespace().equals(QuarryMod.MOD_ID))
+    public void recipesLoad(GameTestHelper context) {
+        long loaded = context.getLevel().getServer().getRecipeManager().getRecipes().stream()
+            .filter(entry -> entry.id().identifier().getNamespace().equals(QuarryMod.MOD_ID))
             .count();
-        context.assertTrue(loaded == RECIPE_COUNT, Text.literal("Loaded " + loaded + " of " + RECIPE_COUNT + " recipes"));
-        context.complete();
+        context.assertTrue(loaded == RECIPE_COUNT, Component.literal("Loaded " + loaded + " of " + RECIPE_COUNT + " recipes"));
+        context.succeed();
     }
 
     @GameTest
-    public void blocksUseModNamespace(TestContext context) {
+    public void blocksUseModNamespace(GameTestHelper context) {
         for (Block block : new Block[]{QuarryManagerContent.Machine.QUARRY.block, QuarryManagerContent.DRILL_TUBE}) {
-            String path = Registries.BLOCK.getId(block).getPath();
+            String path = BuiltInRegistries.BLOCK.getKey(block).getPath();
             String translationKey = "block." + QuarryMod.MOD_ID + "." + path;
-            context.assertTrue(block.getTranslationKey().equals(translationKey),
-                Text.literal("Block translation key " + block.getTranslationKey()));
-            context.assertTrue(block.asItem().getTranslationKey().equals(translationKey),
-                Text.literal("Item translation key " + block.asItem().getTranslationKey()));
+            context.assertTrue(block.getDescriptionId().equals(translationKey),
+                Component.literal("Block translation key " + block.getDescriptionId()));
+            context.assertTrue(block.asItem().getDescriptionId().equals(translationKey),
+                Component.literal("Item translation key " + block.asItem().getDescriptionId()));
 
-            var lootTableKey = block.getLootTableKey().orElseThrow();
-            context.assertTrue(lootTableKey.getValue().getNamespace().equals(QuarryMod.MOD_ID),
-                Text.literal("Loot table " + lootTableKey.getValue()));
-            LootTable lootTable = context.getWorld().getServer().getReloadableRegistries().getLootTable(lootTableKey);
-            context.assertTrue(lootTable != LootTable.EMPTY, Text.literal("Loot table " + lootTableKey.getValue() + " is missing"));
+            var lootTableKey = block.getLootTable().orElseThrow();
+            context.assertTrue(lootTableKey.identifier().getNamespace().equals(QuarryMod.MOD_ID),
+                Component.literal("Loot table " + lootTableKey.identifier()));
+            LootTable lootTable = context.getLevel().getServer().reloadableRegistries().getLootTable(lootTableKey);
+            context.assertTrue(lootTable != LootTable.EMPTY, Component.literal("Loot table " + lootTableKey.identifier() + " is missing"));
         }
-        context.complete();
+        context.succeed();
     }
 }

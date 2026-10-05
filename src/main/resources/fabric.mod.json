@@ -29,11 +29,11 @@
   "mixins": [
   ],
   "depends": {
-    "fabricloader": ">=0.17.3",
-    "fabric": "*",
-    "minecraft": "~1.21.10",
-    "java": ">=21",
-    "techreborn": ">=5.15.0"
+    "fabricloader": ">=0.18.4",
+    "fabric-api": "*",
+    "minecraft": "~26.1",
+    "java": ">=25",
+    "techreborn": ">=6.0.1"
   },
   "suggests": {
     "another-mod": "*"

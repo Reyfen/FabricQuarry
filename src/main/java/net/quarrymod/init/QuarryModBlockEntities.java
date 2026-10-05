@@ -1,15 +1,15 @@
 package net.quarrymod.init;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import org.apache.commons.lang3.Validate;
@@ -31,23 +31,23 @@ public class QuarryModBlockEntities {
 
 
     public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier,
-        String name, ItemConvertible... items) {
+        String name, ItemLike... items) {
         return register(supplier, name,
-            Arrays.stream(items).map(itemConvertible -> Block.getBlockFromItem(itemConvertible.asItem()))
+            Arrays.stream(items).map(itemConvertible -> Block.byItem(itemConvertible.asItem()))
                 .toArray(Block[]::new));
     }
 
     public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier,
         String name, Block... blocks) {
         Validate.isTrue(blocks.length > 0, "no blocks for blockEntity entity type!");
-        return register(Identifier.of(QuarryMod.MOD_ID, name).toString(),
+        return register(Identifier.fromNamespaceAndPath(QuarryMod.MOD_ID, name).toString(),
             FabricBlockEntityTypeBuilder.create(supplier::apply, blocks));
     }
 
     public static <T extends BlockEntity> BlockEntityType<T> register(String id,
         FabricBlockEntityTypeBuilder<T> builder) {
         BlockEntityType<T> blockEntityType = builder.build(null);
-        Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(id), blockEntityType);
+        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Identifier.parse(id), blockEntityType);
         QuarryModBlockEntities.TYPES.add(blockEntityType);
         return blockEntityType;
     }

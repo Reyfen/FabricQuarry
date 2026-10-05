@@ -1,6 +1,6 @@
 package net.quarrymod.items;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import org.jetbrains.annotations.NotNull;
 

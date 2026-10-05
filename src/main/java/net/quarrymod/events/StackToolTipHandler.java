@@ -2,13 +2,13 @@ package net.quarrymod.events;
 
 import com.google.common.collect.Maps;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item.TooltipContext;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.TooltipContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.init.QuarryManagerContent;
 import net.quarrymod.items.QuarryUpgradeItem;
@@ -27,10 +27,10 @@ public class StackToolTipHandler implements ItemTooltipCallback {
     }
 
     @Override
-    public void getTooltip(ItemStack stack, TooltipContext tooltipContext, TooltipType tooltipType, List<Text> tooltipLines) {
+    public void getTooltip(ItemStack stack, TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> tooltipLines) {
         Item item = stack.getItem();
 
-        if (!MinecraftClient.getInstance().isOnThread()) {
+        if (!Minecraft.getInstance().isSameThread()) {
             return;
         }
         if (!isQMItem(item)) {
@@ -41,12 +41,12 @@ public class StackToolTipHandler implements ItemTooltipCallback {
             tooltipLines.addAll(
                 getUpgradeStats(
                     QuarryManagerContent.Upgrades.getFrom(quarryItem),
-                    MinecraftClient.getInstance().isShiftPressed()));
+                    Minecraft.getInstance().hasShiftDown()));
         }
     }
 
     private static boolean isQMItem(Item item) {
         return IS_QM_ITEM_CACHE.computeIfAbsent(item,
-            b -> Registries.ITEM.getId(item).getNamespace().equals(QuarryMod.MOD_ID));
+            b -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(QuarryMod.MOD_ID));
     }
 }

@@ -1,19 +1,19 @@
 package net.quarrymod.block;
 
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import net.quarrymod.init.QuarryManagerContent;
 
 import java.util.Arrays;
 
 public class QuarryItemGroup {
     public static void registerItemsInItemGroup() {
-        ItemGroupEvents.modifyEntriesEvent(RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.of("techreborn", "item_group"))).register(entries -> {
-            entries.add(QuarryManagerContent.DRILL_TUBE);
-            Arrays.stream(QuarryManagerContent.Machine.values()).forEach(value -> entries.add(value.block));
-            Arrays.stream(QuarryManagerContent.Upgrades.values()).forEach(value -> entries.add(value.item));
+        CreativeModeTabEvents.modifyOutputEvent(ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath("techreborn", "item_group"))).register(entries -> {
+            entries.accept(QuarryManagerContent.DRILL_TUBE);
+            Arrays.stream(QuarryManagerContent.Machine.values()).forEach(value -> entries.accept(value.block));
+            Arrays.stream(QuarryManagerContent.Upgrades.values()).forEach(value -> entries.accept(value.item));
         });
     }
 }
