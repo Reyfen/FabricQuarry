@@ -3,7 +3,6 @@ package net.quarrymod.events;
 import com.google.common.collect.Maps;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.item.Item;
@@ -42,7 +41,7 @@ public class StackToolTipHandler implements ItemTooltipCallback {
             tooltipLines.addAll(
                 getUpgradeStats(
                     QuarryManagerContent.Upgrades.getFrom(quarryItem),
-                    Screen.hasShiftDown()));
+                    MinecraftClient.getInstance().isShiftPressed()));
         }
     }
 

@@ -65,7 +65,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     private ExtendedScreenHandlerType.ExtendedFactory<BuiltScreenHandler, ScreenHandlerData> getScreenHandlerFactory() {
         return (syncId, playerInventory, data) -> {
-            final BlockEntity blockEntity = playerInventory.player.getWorld().getBlockEntity(data.pos());
+            final BlockEntity blockEntity = playerInventory.player.getEntityWorld().getBlockEntity(data.pos());
             BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(syncId,
                 playerInventory.player);
 
@@ -82,7 +82,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     @Override
     public void open(PlayerEntity player, BlockPos pos, World world) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             //This is awful
             player.openHandledScreen(new ExtendedScreenHandlerFactory<ScreenHandlerData>() {
                 @Override
@@ -98,7 +98,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
                 @Nullable
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    final BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
+                    final BlockEntity blockEntity = player.getEntityWorld().getBlockEntity(pos);
                     BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(
                         syncId, player);
                     screenHandler.setType(screenHandlerType);

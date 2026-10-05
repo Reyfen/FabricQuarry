@@ -21,7 +21,7 @@ public class QuarryManagerServerPacket {
             if (!payload.isWithinDistance(context.player(), 64)) {
                 return;
             }
-            BlockEntity blockEntity = context.player().getWorld().getBlockEntity(payload.pos());
+            BlockEntity blockEntity = context.player().getEntityWorld().getBlockEntity(payload.pos());
             if (blockEntity instanceof QuarryBlockEntity quarryBlockEntity) {
                 quarryBlockEntity.setMineAll(payload.mineAll());
             }

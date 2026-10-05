@@ -11,13 +11,13 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -150,7 +150,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     private void refreshProperty() {
-        if (world != null && !world.isClient) {
+        if (world != null && !world.isClient()) {
             ((QuarryBlock) world.getBlockState(pos).getBlock()).setState(getDisplayState(), world, pos);
         }
     }
@@ -190,7 +190,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity2) {
         super.tick(world, pos, state, blockEntity2);
 
-        if (world == null || world.isClient) {
+        if (world == null || world.isClient()) {
             return;
         }
 
@@ -539,26 +539,25 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @Override
-    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(tag, registryLookup);
-        NbtCompound data = tag.getCompoundOrEmpty("Quarry");
+    public void readData(ReadView view) {
+        super.readData(view);
+        ReadView data = view.getReadView("Quarry");
         setState(data.getInt("state", 0));
         setWorkType(data.getInt("workType", 0));
         setProgress(data.getLong("progress", 0L));
         setMiningAll(data.getInt("mineAll", 0));
-        quarryUpgradesInventory.read(tag, "quarryUpgradesInventory", registryLookup);
+        quarryUpgradesInventory.read(view, "quarryUpgradesInventory");
     }
 
     @Override
-    public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(tag, registryLookup);
-        NbtCompound data = new NbtCompound();
+    public void writeData(WriteView view) {
+        super.writeData(view);
+        WriteView data = view.get("Quarry");
         data.putInt("state", getState());
         data.putInt("workType", getWorkType());
         data.putLong("progress", getProgress());
         data.putInt("mineAll", getMiningAll());
-        tag.put("Quarry", data);
-        tag.put("quarryUpgradesInventory", quarryUpgradesInventory.serializeNBT(registryLookup));
+        quarryUpgradesInventory.write(view, "quarryUpgradesInventory");
     }
 
     private long getProgress() {
