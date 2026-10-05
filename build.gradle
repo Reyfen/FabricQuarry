@@ -3,8 +3,8 @@ plugins {
   id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.toVersion(project.java_version)
+targetCompatibility = JavaVersion.toVersion(project.java_version)
 
 archivesBaseName = "${project.archives_base_name}-${project.minecraft_version}"
 version = project.mod_version
@@ -79,7 +79,7 @@ tasks.withType(JavaCompile).configureEach {
   it.options.encoding = "UTF-8"
 
   // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-  it.options.release = 17
+  it.options.release = project.java_version as Integer
 }
 
 java {
@@ -101,6 +101,7 @@ publishing {
     mavenJava(MavenPublication) {
       groupId = 'net.quarrymod'
       artifactId = 'fabric-quarry'
+      version = "${project.mod_version}+${project.minecraft_label}"
       from components.java
     }
   }
@@ -117,4 +118,16 @@ publishing {
       }
     }
   }
+}
+
+task gametestJar(type: Jar) {
+  from sourceSets.gametest.output
+  archiveClassifier = "gametest-dev"
+}
+
+task remapGametestJar(type: net.fabricmc.loom.task.RemapJarTask) {
+  dependsOn gametestJar
+  inputFile = gametestJar.archiveFile
+  archiveClassifier = "gametest"
+  addNestedDependencies = false
 }
