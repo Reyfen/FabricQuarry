@@ -19,7 +19,6 @@ import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.client.GuiType;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import reborncore.common.blocks.BlockMachineBase;
-import reborncore.common.util.ItemHandlerUtils;
 
 public class QuarryBlock extends BlockMachineBase {
 
@@ -57,15 +56,6 @@ public class QuarryBlock extends BlockMachineBase {
         super.onPlaced(world, pos, state, placer, stack);
         if (world.getBlockEntity(pos) instanceof QuarryBlockEntity quarryEntity) {
             quarryEntity.resetOnPlaced();
-        }
-    }
-
-    @Override
-    public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()
-            && worldIn.getBlockEntity(pos) instanceof QuarryBlockEntity quarryEntity) {
-            ItemHandlerUtils.dropItemHandler(worldIn, pos, quarryEntity.quarryUpgradesInventory);
-            super.onStateReplaced(state, worldIn, pos, newState, isMoving);
         }
     }
 

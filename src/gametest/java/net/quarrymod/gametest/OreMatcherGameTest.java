@@ -1,17 +1,17 @@
 package net.quarrymod.gametest;
 
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registries;
-import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.quarrymod.blockentity.machine.tier3.OreMatcher;
 
-public class OreMatcherGameTest implements FabricGameTest {
+public class OreMatcherGameTest {
 
-    @GameTest(templateName = EMPTY_STRUCTURE)
+    @GameTest
     public void vanillaOres(TestContext context) {
         expectOre(context, Blocks.COAL_ORE, true);
         expectOre(context, Blocks.DEEPSLATE_DIAMOND_ORE, true);
@@ -24,7 +24,7 @@ public class OreMatcherGameTest implements FabricGameTest {
         context.complete();
     }
 
-    @GameTest(templateName = EMPTY_STRUCTURE)
+    @GameTest
     public void modOres(TestContext context) {
         expectOre(context, QuarryGameTestBlocks.TAGGED_ROCK, true);
         expectOre(context, QuarryGameTestBlocks.DENIED_ORE, false);
@@ -34,11 +34,11 @@ public class OreMatcherGameTest implements FabricGameTest {
         context.complete();
     }
 
-    @GameTest(templateName = EMPTY_STRUCTURE)
+    @GameTest
     public void techRebornOres(TestContext context) {
         for (String name : new String[]{"tin_ore", "deepslate_iridium_ore", "pyrite_ore", "sheldonite_ore"}) {
             Identifier id = Identifier.of("techreborn", name);
-            context.assertTrue(Registries.BLOCK.containsId(id), "Missing block " + id);
+            context.assertTrue(Registries.BLOCK.containsId(id), Text.literal("Missing block " + id));
             expectOre(context, Registries.BLOCK.get(id), true);
         }
         context.complete();
@@ -47,6 +47,6 @@ public class OreMatcherGameTest implements FabricGameTest {
     private static void expectOre(TestContext context, Block block, boolean expected) {
         boolean actual = OreMatcher.isOre(block.getDefaultState());
         context.assertTrue(actual == expected,
-            Registries.BLOCK.getId(block) + " should " + (expected ? "" : "not ") + "be an ore");
+            Text.literal(Registries.BLOCK.getId(block) + " should " + (expected ? "" : "not ") + "be an ore"));
     }
 }

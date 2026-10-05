@@ -40,6 +40,7 @@ import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
 import reborncore.common.screen.builder.ScreenHandlerBuilder;
 import reborncore.common.screen.slot.BaseSlot;
+import reborncore.common.util.ItemHandlerUtils;
 import reborncore.common.util.RebornInventory;
 
 import java.lang.reflect.Field;
@@ -530,13 +531,21 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @Override
+    public void onBlockReplaced(BlockPos pos, BlockState oldState) {
+        if (world != null) {
+            ItemHandlerUtils.dropItemHandler(world, pos, quarryUpgradesInventory);
+        }
+        super.onBlockReplaced(pos, oldState);
+    }
+
+    @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(tag, registryLookup);
-        NbtCompound data = tag.getCompound("Quarry");
-        setState(data.getInt("state"));
-        setWorkType(data.getInt("workType"));
-        setProgress(data.getLong("progress"));
-        setMiningAll(data.getInt("mineAll"));
+        NbtCompound data = tag.getCompoundOrEmpty("Quarry");
+        setState(data.getInt("state", 0));
+        setWorkType(data.getInt("workType", 0));
+        setProgress(data.getLong("progress", 0L));
+        setMiningAll(data.getInt("mineAll", 0));
         quarryUpgradesInventory.read(tag, "quarryUpgradesInventory", registryLookup);
     }
 
