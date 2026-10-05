@@ -6,7 +6,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
+archivesBaseName = "${project.archives_base_name}-${project.minecraft_version}"
 version = project.mod_version
 group = project.maven_group
 
@@ -16,6 +16,35 @@ repositories {
   // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
   // See https://docs.gradle.org/current/userguide/declaring_repositories.html
   // for more information about repositories.
+}
+
+sourceSets {
+  gametest {
+    compileClasspath += main.compileClasspath + main.output
+    runtimeClasspath += main.runtimeClasspath + main.output
+  }
+}
+
+loom {
+  mods {
+    quarrymod {
+      sourceSet sourceSets.main
+    }
+    "quarrymod-gametest" {
+      sourceSet sourceSets.gametest
+    }
+  }
+
+  runs {
+    gametest {
+      server()
+      name "Game Test"
+      vmArg "-Dfabric-api.gametest"
+      vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/gametest/junit.xml"
+      runDir "build/gametest"
+      source sourceSets.gametest
+    }
+  }
 }
 
 dependencies {

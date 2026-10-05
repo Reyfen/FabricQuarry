@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -29,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import reborncore.api.IToolDrop;
 import reborncore.api.blockentity.InventoryProvider;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
+import reborncore.common.blockentity.RedstoneConfiguration;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.screen.BuiltScreenHandler;
@@ -209,6 +209,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     @SuppressWarnings("ConstantConditions")
     private void tickQuarryLogic() {
         if (excavationState == ExcavationState.Complete) {
+            return;
+        }
+        if (!isActive(RedstoneConfiguration.POWER_IO)) {
+            setExcavationState(ExcavationState.NoEnergyIncome);
             return;
         }
         if (miningEnergySpend < getEnergyPerExcavation()) {
@@ -431,11 +435,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             && !(block instanceof FluidBlock)
             && state.getHardness(world, blockPos) >= 0f
             && !isDrillTube(state)
-            && (getMineAll() || isOre(Registries.BLOCK.getId(block).toString()));
-    }
-
-    private boolean isOre(String id) {
-        return id.endsWith("_ore") || QuarryMachineConfig.quarryAdditioanlBlocksToMine.contains(id);
+            && (getMineAll() || OreMatcher.isOre(state));
     }
 
     @SuppressWarnings("ConstantConditions")

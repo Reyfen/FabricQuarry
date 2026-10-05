@@ -1,5 +1,6 @@
 package net.quarrymod.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import reborncore.common.config.Config;
@@ -33,6 +34,9 @@ public class QuarryMachineConfig {
     @Config(config = "machines", category = "quarry", key = "QuarryAccessibleExcavationModes", comment = "Quarry Accessible Excavation Modes, 1 - ores only, 2 - all only, 3 - all and ores")
     public static int quarryAccessibleExcavationModes = 3;
 
-    @Config(config = "machines", category = "quarry", key = "QuarryAdditioanlBlocksToMine", comment = "Additioanl Blocks to Mine list")
-    public static List<String> quarryAdditioanlBlocksToMine = Arrays.asList("minecraft:ancient_debris");
+    @Config(config = "machines", category = "quarry", key = "QuarryAdditioanlBlocksToMine", comment = "Additional blocks to mine in ores mode. Block ids (modid:block) or block tags (#modid:tag)")
+    public static List<String> quarryAdditioanlBlocksToMine = new ArrayList<>();
+
+    @Config(config = "machines", category = "quarry", key = "QuarryBlocksToNeverMine", comment = "Blocks never mined in ores mode, even if they look like ores. Block ids (modid:block) or block tags (#modid:tag)")
+    public static List<String> quarryBlocksToNeverMine = new ArrayList<>();
 }

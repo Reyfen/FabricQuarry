@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "quarrymod-gametest:tagged_rock",
+    "quarrymod-gametest:denied_ore"
+  ]
+}

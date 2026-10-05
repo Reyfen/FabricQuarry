@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "quarrymod-gametest",
+  "version": "1.0.0",
+  "name": "Industrial Quarry Mod Game Tests",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.quarrymod.gametest.QuarryGameTestBlocks"
+    ],
+    "fabric-gametest": [
+      "net.quarrymod.gametest.OreMatcherGameTest",
+      "net.quarrymod.gametest.QuarryBlockGameTest"
+    ]
+  },
+  "depends": {
+    "quarrymod": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

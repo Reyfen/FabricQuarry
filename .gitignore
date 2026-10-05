@@ -31,3 +31,8 @@ bin/
 # fabric
 
 run/
+
+# multi-version build output
+
+.worktrees/
+dist/
