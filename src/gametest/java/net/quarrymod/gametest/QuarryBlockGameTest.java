@@ -2,13 +2,18 @@ package net.quarrymod.gametest;
 
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.ExcavationState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.init.QuarryManagerContent;
 import reborncore.common.blockentity.RedstoneConfiguration;
+import reborncore.common.screen.BuiltScreenHandler;
 
 public class QuarryBlockGameTest implements FabricGameTest {
 
@@ -44,6 +49,19 @@ public class QuarryBlockGameTest implements FabricGameTest {
                 context.complete();
             });
         });
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void quarryOpensMenu(TestContext context) {
+        placeQuarry(context);
+        ServerPlayerEntity player = context.createMockCreativeServerPlayerInWorld();
+        player.setPosition(context.getAbsolutePos(QUARRY_POS.up()).toCenterPos());
+        context.useBlock(QUARRY_POS, player);
+        context.assertTrue(player.currentScreenHandler instanceof BuiltScreenHandler,
+            "Quarry menu was not opened");
+        context.assertTrue(Registries.SCREEN_HANDLER.containsId(Identifier.of(QuarryMod.MOD_ID, "quarry")),
+            "Quarry menu type is not registered");
+        context.complete();
     }
 
     private static QuarryBlockEntity placeQuarry(TestContext context) {
