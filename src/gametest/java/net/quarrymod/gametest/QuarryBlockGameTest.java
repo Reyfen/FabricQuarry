@@ -2,16 +2,22 @@ package net.quarrymod.gametest;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
+import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.ExcavationState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.init.QuarryManagerContent;
 import reborncore.common.blockentity.RedstoneConfiguration;
+import reborncore.common.screen.BuiltScreenHandler;
 
 public class QuarryBlockGameTest {
 
@@ -67,6 +73,19 @@ public class QuarryBlockGameTest {
         Player player = context.makeMockServerPlayerInLevel();
         context.assertTrue(quarry.createScreenHandler(0, player) != null,
             Component.literal("Quarry screen handler was not created"));
+        context.succeed();
+    }
+
+    @GameTest
+    public void quarryOpensMenu(GameTestHelper context) {
+        placeQuarry(context);
+        ServerPlayer player = context.makeMockServerPlayerInLevel();
+        player.setPos(Vec3.atCenterOf(context.absolutePos(QUARRY_POS.above())));
+        context.useBlock(QUARRY_POS, player);
+        context.assertTrue(player.containerMenu instanceof BuiltScreenHandler,
+            Component.literal("Quarry menu was not opened"));
+        context.assertTrue(BuiltInRegistries.MENU.containsKey(Identifier.fromNamespaceAndPath(QuarryMod.MOD_ID, "quarry")),
+            Component.literal("Quarry menu type is not registered"));
         context.succeed();
     }
 
