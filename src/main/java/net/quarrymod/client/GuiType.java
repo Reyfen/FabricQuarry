@@ -37,6 +37,9 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
     private static final Map<Identifier, GuiType<?>> TYPES = new HashMap<>();
     public static final GuiType<QuarryBlockEntity> QUARRY = register("quarry", () -> () -> QuarryScreen::new);
 
+    public static void init() {
+    }
+
     private static <T extends BlockEntity> GuiType<T> register(String id,
         Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
         return register(Identifier.of(QuarryMod.MOD_ID, id), factorySupplierMeme);
