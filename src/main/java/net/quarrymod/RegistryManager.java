@@ -8,6 +8,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.quarrymod.block.QuarryItemGroup;
+import net.quarrymod.client.GuiType;
 import net.quarrymod.client.QuarryScreenRegistry;
 import net.quarrymod.events.StackToolTipHandler;
 import net.quarrymod.init.QuarryManagerContent;
@@ -54,6 +55,7 @@ public class RegistryManager {
             value -> registerItem(value.item, Identifier.fromNamespaceAndPath(QuarryMod.MOD_ID, value.name)));
         QuarryModBlockEntities.init();
         QuarryItemGroup.registerItemsInItemGroup();
+        GuiType.init();
     }
 
     @SuppressWarnings("MethodCallSideOnly")
