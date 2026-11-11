@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -61,8 +62,8 @@ public class QuarryClientGameTest implements FabricClientGameTest {
 
             context.runOnClient(client -> {
                 client.currentScreen.close();
-                client.world.disconnect();
-                client.disconnect();
+                client.world.disconnect(Text.literal("Disconnecting"));
+                client.disconnectWithSavingScreen();
             });
             context.waitFor(client -> client.world == null);
             context.setScreen(TitleScreen::new);
