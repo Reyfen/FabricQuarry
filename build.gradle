@@ -44,6 +44,14 @@ loom {
       runDir "build/gametest"
       source sourceSets.gametest
     }
+    clientGametest {
+      client()
+      name "Client Game Test"
+      vmArg "-Dfabric.client.gametest"
+      vmArg "-Dfabric.client.gametest.disableNetworkSynchronizer=true"
+      runDir "build/clientgametest"
+      source sourceSets.gametest
+    }
   }
 }
 
