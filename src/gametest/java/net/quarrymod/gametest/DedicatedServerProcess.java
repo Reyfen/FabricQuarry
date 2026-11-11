@@ -67,6 +67,7 @@ public final class DedicatedServerProcess implements AutoCloseable {
             properties.setProperty("server-port", String.valueOf(port));
             properties.setProperty("spawn-protection", "0");
             properties.setProperty("max-players", "1");
+            properties.setProperty("white-list", "false");
             properties.setProperty("level-type", "minecraft:flat");
             properties.setProperty("generate-structures", "false");
             properties.setProperty("spawn-monsters", "false");
