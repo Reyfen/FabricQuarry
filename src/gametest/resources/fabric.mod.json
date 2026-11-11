@@ -12,6 +12,9 @@
       "net.quarrymod.gametest.OreMatcherGameTest",
       "net.quarrymod.gametest.QuarryBlockGameTest",
       "net.quarrymod.gametest.QuarryDataGameTest"
+    ],
+    "fabric-client-gametest": [
+      "net.quarrymod.gametest.QuarryClientGameTest"
     ]
   },
   "depends": {
