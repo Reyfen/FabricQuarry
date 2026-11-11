@@ -30,7 +30,7 @@ public class QuarryClientGameTest implements FabricClientGameTest {
             context.waitFor(client -> server.isReady() || !server.isAlive(), SERVER_START_TIMEOUT);
             assertTrue(server.isReady(), "Dedicated server did not start, see dedicated-server/server-output.log");
 
-            context.runOnClient(client -> ConnectScreen.startConnecting(client.screen, client,
+            context.runOnClient(client -> ConnectScreen.startConnecting(client.gui.screen(), client,
                 ServerAddress.parseString(server.address()),
                 new ServerData("Quarry test server", server.address(), ServerData.Type.OTHER), false, null));
             context.waitFor(client -> inWorld(client) || isDisconnected(client), TIMEOUT);
@@ -46,22 +46,22 @@ public class QuarryClientGameTest implements FabricClientGameTest {
                 && client.player.blockPosition().getZ() == 0, TIMEOUT);
             assertConnected(context, server, "placing the quarry");
 
-            context.waitFor(client -> client.screen == null || isDisconnected(client), TIMEOUT);
+            context.waitFor(client -> client.gui.screen() == null || isDisconnected(client), TIMEOUT);
             assertConnected(context, server, "loading terrain");
 
             context.runOnClient(client -> client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND,
                 new BlockHitResult(Vec3.atCenterOf(QUARRY_POS), Direction.NORTH, QUARRY_POS, false)));
-            context.waitFor(client -> client.screen instanceof QuarryScreen || isDisconnected(client)
+            context.waitFor(client -> client.gui.screen() instanceof QuarryScreen || isDisconnected(client)
                 || !server.isAlive(), TIMEOUT);
             assertConnected(context, server, "opening the quarry");
             context.waitTicks(20);
             assertConnected(context, server, "showing the quarry screen");
-            assertTrue(context.computeOnClient(client -> client.screen instanceof QuarryScreen),
+            assertTrue(context.computeOnClient(client -> client.gui.screen() instanceof QuarryScreen),
                 "Quarry screen is not open");
             context.takeScreenshot("quarry_screen_dedicated_server");
 
             context.runOnClient(client -> {
-                client.screen.onClose();
+                client.gui.screen().onClose();
                 client.level.disconnect(Component.literal("Disconnecting"));
                 client.disconnectWithSavingScreen();
             });
@@ -75,12 +75,12 @@ public class QuarryClientGameTest implements FabricClientGameTest {
     }
 
     private static boolean isDisconnected(Minecraft client) {
-        return client.screen instanceof DisconnectedScreen;
+        return client.gui.screen() instanceof DisconnectedScreen;
     }
 
     private static void assertConnected(ClientGameTestContext context, DedicatedServerProcess server, String step) {
         String disconnected = context.computeOnClient(client ->
-            client.screen instanceof DisconnectedScreen screen ? screen.getTitle().getString() : null);
+            client.gui.screen() instanceof DisconnectedScreen screen ? screen.getTitle().getString() : null);
         assertTrue(disconnected == null, "Disconnected while " + step + ": " + disconnected);
         assertTrue(server.isAlive(), "Dedicated server stopped while " + step
             + ", see dedicated-server/server-output.log");
